@@ -1,4 +1,4 @@
-# scrapyard
+# Workflow for identifying and testing various SNPs in Parvalbumin structures
 
 # 
 install foldx 
