@@ -13,6 +13,8 @@ import util as uti
 import subprocess
 import os
 working_dir = './'
+indivfilename="individual_list.txt"
+
 #$ FAUST 
 #foldx='/home/pkekeneshuskey/sources/foldxLinux64/foldx_20251231'
 foldx='/home/pkekeneshuskey/source/foldxLinux64/foldx_20251231'
@@ -147,7 +149,6 @@ def doit(
   if 'build' in action:
     result = []
     pdb_file = f"{pdbCode}_Repair.pdb"
-    filename="individual_list.txt"
 
     print("Using first few from pairsList")
     proposedMuts = uti.get_muts_pairs(pairsList)  
@@ -174,7 +175,7 @@ def doit(
       result_line = ",".join(mut_converted) + ";\n"
       result.append(result_line)
   
-    with open(filename, 'w') as f:
+    with open(indivfilename, 'w') as f:
       delimiter=""
       f.write(delimiter.join(map(str, result))) #map to string in case of numbers
     #print(f"List successfully written to {filename}")
@@ -184,19 +185,24 @@ def doit(
   
     if os.path.exists(pdb_file) and os.path.exists(rotabase_file):
         stdout2,stderr2 = run_foldx("BuildModel", 
-          input_files=[pdb_file, rotabase_file,f"--mutant-file={filename}"], 
+          input_files=[pdb_file, rotabase_file,f"--mutant-file={indivfilename}"], 
           output_prefix="build_model", working_dir=working_directory)
         print(stdout2)
   
   if 'process' in action or 'build' in action:
     # get last N lines of file 
     filename = f"Average_build_model_{pdbCode}_Repair.fxout"                
-    n = len(mutList) 
+    with open(indivfilename, "r") as file:
+      lines = file.readlines()  # Reads each line into a list
+    muts = [line.replace(";\n","") for line in lines]
+
+
+    n = len(muts) 
     lines = uti.get_last_n_lines(filename, n)
     for i in range(n): 
       line = lines[i]
       z = line.split("\t") 
-      print(f"{mutList[i]} {z[0]} {z[2]}") 
+      print(f"{muts[i]} {z[0]} {z[2]}") 
     
 
 
