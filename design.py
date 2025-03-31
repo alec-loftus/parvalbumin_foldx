@@ -17,7 +17,7 @@ indivfilename="individual_list.txt"
 
 #$ FAUST 
 #foldx='/home/pkekeneshuskey/sources/foldxLinux64/foldx_20251231'
-foldx='/home/pkekeneshuskey/source/foldxLinux64/foldx_20251231'
+foldx='/Users/alecloftus/Desktop/parvalbumin_foldx-main/foldx_20251231'
 
 def run_foldx(command, input_files=None, output_prefix="foldx_output", working_dir=None):
     """
@@ -68,7 +68,7 @@ def run_foldx(command, input_files=None, output_prefix="foldx_output", working_d
 #action='ptraj'    # find residues at interface 
 #action='build'   # introduce mutations via foldx [see mutList below]
 #action='process' # process scores from foldx:w
-pdbCode = '1RWY'
+pdbCode ='1RWY'#'2NLN' #'1RWY'
 working_directory = "./" # or wherever your files are.
 
 # selecting interface residues 
@@ -82,8 +82,16 @@ mutList = [
  'E81K',
  'E81R',
  'S78K',
+ """
+ 'D45K',
+ 'D59E',
+ 'G60E',
+ 'G98D',
+ 'K69G',
+ 'L58I'
+ """
 ]
-# obrained from running code with action ptraj
+# obtained from running code with action ptraj
 pairsList = ["I11-F70","I15-L67","F18-R75","T19-R75","A20-R75","A21-R75","D22-S78","D22-E81","D22-K80","S23-E81","S23-R75","F24-R75","F24-E81","F24-L67","F24-L85","H26-L85","H26-A88","F29-F70","F29-L67","V33-F70"]
 # 'S23K,R75D',
 #'S78K',
@@ -95,8 +103,15 @@ rotabase_file = "rotabase.txt" #Make sure rotabase.txt is in the working directo
 
 fasta="""\
 >XP_006241991.1 parvalbumin alpha isoform X1 [Rattus norvegicus]
-MSMTDLLSAEDIKKAIGAFTAADSFDHKKFFQMVGLKKKSADDVKKVFHILDKDKSGFIEEDELGSILKG
-FSSDARDLSAKETKTLMAAGDKDGDGKIGVEEFSTLVAES"""
+#MSMTDLLSAEDIKKAIGAFTAADSFDHKKFFQMVGLKKKSADDVKKVFHILDKDKSGFIEEDELGSILKG
+#FSSDARDLSAKETKTLMAAGDKDGDGKIGVEEFSTLVAES"""
+#>NP_037127.1 oncomodulin [Rattus norvegicus]
+#MSITDILSAEDIAAALQECQDPDTFEPQKFFQTSGLSKMSASQVKDIFRFIDNDQSGYLDGDELKYFLQKFQSDARELTE
+#SETKSLMDAADNDGDGKIGADEFQEMVHS"""
+
+#>XP_006241991.1 parvalbumin alpha isoform X1 [Rattus norvegicus]
+#MSMTDLLSAEDIKKAIGAFTAADSFDHKKFFQMVGLKKKSADDVKKVFHILDKDKSGFIEEDELGSILKG
+#FSSDARDLSAKETKTLMAAGDKDGDGKIGVEEFSTLVAES"""
 
 def doit(
   action=None,
@@ -119,9 +134,18 @@ def doit(
                 cwd=working_dir,
                 text=True  # Important for getting text output, not bytes
             )
-    
     stdout, stderr = process.communicate()
-  
+    print(stderr[:-1])
+
+    if 'Bad Request' in stderr:
+        raise RuntimeError()
+    elif 'Saving to' in stderr:
+        print(pdbCode + '.pdb has been saved.')
+    else:
+        raise RuntimeError('Error not recognized. Please review PDB code and try again.')
+    #repeating this task creates another pdb file saved as '1RWY.pdb.1'
+    #   and so forth. Consider rewriting to overwrite prev versions?
+    
   if 'repair' in action: 
     # Fix file
     # - takes a few minutes 
@@ -129,7 +153,7 @@ def doit(
     output_prefix = "repaired"
     print("Might have to run manually....") 
     stdout, stderr = run_foldx("RepairPDB", input_files=[pdb_file], output_prefix=output_prefix, working_dir=working_directory)
-    
+    print(stderr)
   
   import util as ut
   import pytraj as pt
