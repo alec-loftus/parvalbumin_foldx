@@ -50,11 +50,13 @@ Execute the design script
     ```
 
 
-  action='getpdb'  # get pdb structure 
-  action='repair'  # fix it via foldx 
-  action='ptraj'    # find residues at interface 
+  action='getpdb'  # get pdb structure
+  
+  action='repair'  # fix it via foldx
+  
+  action='ptraj'    # find residues at interface
+  
   action='build'   # introduce mutations via foldx [see mutList below]
+  
   action='process' # process scores from foldx:w
-
-
 
