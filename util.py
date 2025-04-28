@@ -83,7 +83,7 @@ def get_aa(pdb_file,
 
 def get_interface_pairs(pdb_file,distance,
   aaRange1="8-33",
-  aaRange2="60-89"
+  aaRange2="50-89"
 ):
   print("WARNING: number is off!!!!!!!!! by 1 ") 
   print("Manually had to delete first few lines before ptraj would read") 
